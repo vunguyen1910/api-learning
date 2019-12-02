@@ -12,6 +12,7 @@ from src.models.course import Course
 from src.models.recourse import Recourse
 from src.models.student import Student, StudentCourse
 from src.models.teacher import Teacher
+
 migrate = Migrate(app, db)
 
 db.create_all()

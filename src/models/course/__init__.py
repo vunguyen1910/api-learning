@@ -8,4 +8,3 @@ class Course(db.Model):
     desc = db.Column(db.Text)
     recourse_id = db.relationship('Recourse', backref='course', lazy = True)
     teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id'))
-    students = db.relationship('Student', secondary = "StudentCourse", lazy='subquery', backref = db.backref('courses', lazy = True))
