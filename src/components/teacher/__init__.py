@@ -1,29 +1,78 @@
 from flask import Blueprint, render_template,request,flash, redirect,url_for, jsonify
 from flask_login import current_user, login_required, login_user,logout_user
 from src import db, app
-from src.models import Teacher
-
+from src.models import Teacher, Token
+import uuid
 
 teacher_blueprint = Blueprint('teachers', __name__)
 
-@teacher_blueprint.route('/login', methods=['GET', 'POST'])
+@teacher_blueprint.route('/login', methods=['POST'])
 def login():
+    if request.method=='POST':
+        data = request.get_json()
+        email = data['email']
+        print(email,'54657689i0o')
+        check_user = Teacher.query.filter_by(email = email).first()
+        if check_user:
+            if check_user.check_password(data['pass']):
+                token = Token.query.filter_by(user_id = check_user.id).first()
+                if not token:
+                    token = Token(user_id = check_user.id, uuid = str(uuid.uuid4().hex))
+                    db.session.add(token)
+                    db.session.commit()
+                login_user(check_user)
+                return jsonify({'email': email,
+                                'name': check_user.name, 
+                                "desc": check_user.desc, 
+                                "avata_url": check_user.avata_url, 
+                                "phone": check_user.phone, 
+                                "course_id": check_user.course_id,
+                                "recourse_id": check_user.recourse_id,
+                                "token": token.uuid,
+                                "state": "success"
+                                })
+            return jsonify({'state': 'Wrong Pass'})
+    return jsonify({'state': 'Email not exits'})
+
+@app.route("/logout")
+@login_required
+def logout():
+    token = Token.query.filter_by(user_id = current_user.id).first()
+    if token:
+        db.session.delete(token)
+        db.session.commit()
+    logout_user()
+    return jsonify({
+        'success': True
+    })
+
+@teacher_blueprint.route('/register', methods=['POST'])
+def register():
     if request.method == 'POST':
         data = request.get_json()
-        email = data["email"]
-        password = data["pass"]
-        check_mail = Teacher.query.filter_by(email = email).first()
-        print('check',check_mail)
-        if check_mail.check_password:
-            print('email', email)
-            return jsonify({'email': email,
-                            'name': check_mail.name, 
-                            "desc": check_mail.desc, 
-                            "avata_url": check_mail.avata_url, 
-                            "phone": check_mail.phone, 
-                            "course_id": check_mail.course_id,
-                            "recourse_id": check_mail.recourse_id
+        email_user = data['email']
+        check_email = Teacher.query.filter_by(email = email_user).first()
+        if not check_email:
+            new_teacher = Teacher(email = email_user,
+                                name = data['name'],
+                                desc = data['desc'],
+                                avata_url = data['avata_url'],
+                                phone = data['phone']
+                                )
+            new_teacher.set_password(data['password'])
+            new_token = token = Token(user_id=new_teacher.id, uuid=str(uuid.uuid4().hex))
+            db.session.add(new_teacher, new_token)
+            db.session.commit()
+            return jsonify({'email': email_user,
+                            'name': check_user.name, 
+                            "desc": check_user.desc, 
+                            "avata_url": check_user.avata_url, 
+                            "phone": check_user.phone, 
+                            "course_id": check_user.course_id,
+                            "recourse_id": check_user.recourse_id,
+                            "token": token.uuid,
+                            "state": "success"
                             })
-        if not check_mail:
-            return jsonify({'email': 'not exits'})
-    return jsonify({'email': 'not exits'})
+        return jsonify({'state': 'email already exits'})
+    return jsonify({'state: pls login'})
+            
