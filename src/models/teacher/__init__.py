@@ -8,11 +8,11 @@ class Teacher(UserMixin, db.Model):
     name = db.Column(db.String(155), unique = True, nullable = False)
     desc = db.Column(db.Text)
     avata_url = db.Column(db.Text)
-    email = db.Column(db.String(255), unique = True, nullable = False)
+    email = db.Column(db.String(255), unique = True)
     phone = db.Column(db.Integer, unique= True)
     course_id = db.relationship('Course', backref='teacher', lazy = True)
     recourse_id = db.relationship('Recourse', backref='teacher', lazy = True)
-    password = db.Column(db.String(120),nullable=False)
+    password = db.Column(db.String(120))
 
     def set_password(self,password):
         self.password = generate_password_hash(password)

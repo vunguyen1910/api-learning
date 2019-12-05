@@ -64,12 +64,12 @@ def register():
             db.session.add(new_teacher, new_token)
             db.session.commit()
             return jsonify({'email': email_user,
-                            'name': check_user.name, 
-                            "desc": check_user.desc, 
-                            "avata_url": check_user.avata_url, 
-                            "phone": check_user.phone, 
-                            "course_id": check_user.course_id,
-                            "recourse_id": check_user.recourse_id,
+                            'name': check_email.name, 
+                            "desc": check_email.desc, 
+                            "avata_url": check_email.avata_url, 
+                            "phone": check_email.phone, 
+                            "course_id": check_email.course_id,
+                            "recourse_id": check_email.recourse_id,
                             "token": token.uuid,
                             "state": "success"
                             })

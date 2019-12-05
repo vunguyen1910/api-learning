@@ -12,7 +12,6 @@ blueprint = make_facebook_blueprint(
     storage=SQLAlchemyStorage(OAuth, db.session, user=current_user)
 )
 
-
 # create/login local user on successful OAuth login
 @oauth_authorized.connect_via(blueprint)
 def facebook_logged_in(blueprint, token):
