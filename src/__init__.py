@@ -19,7 +19,6 @@ migrate = Migrate(app, db)
 CORS(app)
 
 login_manager = LoginManager(app)
-login_manager.login_view="teachers.login"
 
 @login_manager.user_loader
 def load_user(id):
@@ -33,7 +32,7 @@ def load_user_from_request(request):
         api_key = api_key.replace('Token ', '', 1)
         token = Token.query.filter_by(uuid=api_key).first()
         if token:
-            return token.teacher
+            return token.user
     return None
 
 from src.components.teacher import teacher_blueprint
