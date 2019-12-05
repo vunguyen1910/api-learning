@@ -6,6 +6,7 @@ import uuid
 
 teacher_blueprint = Blueprint('teachers', __name__)
 
+
 @teacher_blueprint.route('/login', methods=['POST'])
 def login():
     if request.method == 'POST':
@@ -71,22 +72,24 @@ def register():
                 user_id=new_teacher.id, uuid=str(uuid.uuid4().hex))
             db.session.add(new_teacher, new_token)
             db.session.commit()
-            return jsonify({'email': email_user,
+            return jsonify({user{
+                            'email': email_user,
                             'name': check_email.name,
                             "desc": check_email.desc,
                             "avata_url": check_email.avata_url,
                             "phone": check_email.phone,
                             "course_id": check_email.course_id,
-                            "recourse_id": check_email.recourse_id,
+                            "recourse_id": check_email.recourse_id
+                            },
                             "token": token.uuid,
-                            "state": "success"
+                            "success": True
                             })
         if check_phone:
-            return jsonify({'state': 'phone already exits'})
+            return jsonify({'state': 'phone already exits', "success": False})
         if check_name:
-            return jsonify({'state': 'name already exits'})
-        return jsonify({'state': 'email already exits'})
-    return jsonify({'state: pls login'})
+            return jsonify({'state': 'name already exits', , "success": False})
+        return jsonify({'state': 'email already exits', , "success": False})
+    return jsonify({"success": False})
 
 
 @teacher_blueprint.route('/getuser', methods=['GET'])
