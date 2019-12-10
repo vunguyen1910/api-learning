@@ -1,11 +1,12 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask import Blueprint, request, flash, redirect, url_for, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
-from src import db, app
+from src import db, app, mail
 from src.models import Teacher, Token
 import uuid
-
+import requests
+from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer
 teacher_blueprint = Blueprint('teachers', __name__)
-
+from flask_mail import Message
 
 @teacher_blueprint.route('/login', methods=['POST'])
 def login():
@@ -26,9 +27,7 @@ def login():
                                          'name': check_user.name,
                                          "desc": check_user.desc,
                                          "avata_url": check_user.avata_url,
-                                         "phone": check_user.phone,
-                                         "course_id": check_user.course_id,
-                                         "recourse_id": check_user.recourse_id},
+                                         "phone": check_user.phone},
                                 "token": token.uuid,
                                 "success": True,
                                 "message": "success"
@@ -39,7 +38,7 @@ def login():
                     'message': 'Email not exits'})
 
 
-@app.route("/logout")
+@teacher_blueprint.route("/logout")
 @login_required
 def logout():
     token = Token.query.filter_by(user_id=current_user.id).first()
@@ -72,7 +71,7 @@ def register():
                 user_id=new_teacher.id, uuid=str(uuid.uuid4().hex))
             db.session.add(new_teacher, new_token)
             db.session.commit()
-            return jsonify({user{
+            return jsonify({"user":{
                             'email': email_user,
                             'name': check_email.name,
                             "desc": check_email.desc,
@@ -87,8 +86,8 @@ def register():
         if check_phone:
             return jsonify({'state': 'phone already exits', "success": False})
         if check_name:
-            return jsonify({'state': 'name already exits', , "success": False})
-        return jsonify({'state': 'email already exits', , "success": False})
+            return jsonify({'state': 'name already exits' , "success": False})
+        return jsonify({'state': 'email already exits' , "success": False})
     return jsonify({"success": False})
 
 
@@ -100,3 +99,49 @@ def get_user():
         "id": current_user.id,
         "email": current_user.email
     })
+
+
+def send_email(token, email, name):
+    with app.app_context():
+        try:
+            msg = Message(subject="Reset your password from learning music",
+                        sender=app.config.get("MAIL_USERNAME"), #sender email
+                        recipients=[email],
+                        body= f"Hi! {name} to reset your email please enter the link : http://localhost:3000/new-password/?token={token}")
+            mail.send(msg)
+        except Exception as err:
+            print(f'{err}')
+        else: print("success!")
+
+@teacher_blueprint.route('/forgot-password', methods = ['POST'])
+def get_password():
+    if request.method == 'POST':
+        data = request.get_json()
+        user = Teacher.query.filter_by(email = data['email']).first()
+        if not user:
+            return jsonify({'success': False,
+                            'wrong': 'email does not exist'}
+            )
+        else:
+            s = URLSafeTimedSerializer(app.secret_key)
+            token = s.dumps(user.email, salt="RESET_PASSWORD")
+            send_email(token, user.email, user.name)
+            return jsonify({"success": True, 'right': 'email has sent'})
+    return jsonify({'success': False, 'state': 'input your email'})
+
+@teacher_blueprint.route('/new-password', methods = ['POST'])
+def get_new_password():
+    data = request.get_json()
+    token = data['token']
+    new_password = data['password']
+    s = URLSafeTimedSerializer(app.secret_key)
+    email = s.loads(token, salt="SERECT_PASSWORD")
+    user = Teacher(email = email).check_user()
+    if not user:
+        print("INVALID_TOKEN")
+        return redirect("https://localhost:3000/forgot-password")
+        user.set_password(new_password)
+    return jsonify({'state': "success"})
+    
+
+
