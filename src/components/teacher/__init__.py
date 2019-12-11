@@ -77,8 +77,6 @@ def register():
                             "desc": check_email.desc,
                             "avata_url": check_email.avata_url,
                             "phone": check_email.phone,
-                            "course_id": check_email.course_id,
-                            "recourse_id": check_email.recourse_id
                             },
                             "token": token.uuid,
                             "success": True

@@ -5,7 +5,6 @@ from src.models import Course
 
 course_blueprint = Blueprint('courses', __name__)
 
-
 @course_blueprint.route('/create-post', methods = ["POST"])
 @login_required
 def create_Post():

@@ -16,6 +16,5 @@ class Course(db.Model):
             "name": self.name,
             "img": self.img,
             "desc": self.desc,
-            'recourse_id': self.recourse_id,
             'teacher_id': self.teacher_id
         }

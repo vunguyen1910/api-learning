@@ -14,7 +14,7 @@ db = SQLAlchemy(app)
 
 db.init_app(app)
 from src.components.cli import create_db
-from src.models import Teacher, Course, Recourse, Token, OAuth
+from src.models import Teacher, Course, Recourse, Token, OAuth, Document
 app.cli.add_command(create_db)
 
 migrate = Migrate(app, db)
@@ -57,3 +57,6 @@ app.register_blueprint(blueprint, url_prefix="/loginfacebook")
 
 from src.components.course import course_blueprint
 app.register_blueprint(course_blueprint, url_prefix="/course")
+
+from src.components.recourse import recourse_blueprint
+app.register_blueprint(recourse_blueprint, url_prefix="/recourse")
