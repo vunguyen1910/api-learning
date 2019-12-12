@@ -61,4 +61,5 @@ app.register_blueprint(course_blueprint, url_prefix="/course")
 from src.components.recourse import recourse_blueprint
 app.register_blueprint(recourse_blueprint, url_prefix="/recourse")
 
+
 #something new
