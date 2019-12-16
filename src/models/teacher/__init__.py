@@ -5,7 +5,7 @@ from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
 class Teacher(UserMixin, db.Model):
     __tablename__ = 'teachers'
     id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(155), unique = True, nullable = False)
+    name = db.Column(db.String(155), nullable = False)
     desc = db.Column(db.Text)
     avata_url = db.Column(db.Text)
     email = db.Column(db.String(255), unique = True)
