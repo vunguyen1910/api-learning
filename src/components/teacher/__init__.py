@@ -27,7 +27,8 @@ def login():
                                          'name': check_user.name,
                                          "desc": check_user.desc,
                                          "avata_url": check_user.avata_url,
-                                         "phone": check_user.phone},
+                                         "phone": check_user.phone,
+                                         "id": check_user.id},
                                 "token": token.uuid,
                                 "success": True,
                                 "message": "success"
@@ -67,7 +68,7 @@ def register():
                                   phone=data['phone']
                                   )
             new_teacher.set_password(data['password'])
-            new_token = token = Token(
+            new_token = Token(
                 user_id=new_teacher.id, uuid=str(uuid.uuid4().hex))
             db.session.add(new_teacher, new_token)
             db.session.commit()
