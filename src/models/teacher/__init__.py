@@ -19,7 +19,7 @@ class Teacher(UserMixin, db.Model):
     def check_password(self,password):
         return check_password_hash(self.password,password)
     def check_user(self):
-        return User.query.filter_by(email=self.email).first()
+        return Teacher.query.filter_by(email=self.email).first()
 class Token(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     uuid = db.Column(db.String, unique=True)

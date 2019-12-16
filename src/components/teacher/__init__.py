@@ -134,7 +134,7 @@ def get_new_password():
     token = data['token']
     new_password = data['password']
     s = URLSafeTimedSerializer(app.secret_key)
-    email = s.loads(token, salt="SERECT_PASSWORD")
+    email = s.loads(token, salt="RESET_PASSWORD")
     user = Teacher(email = email).check_user()
     if not user:
         print("INVALID_TOKEN")
