@@ -106,7 +106,7 @@ def send_email(token, email, name):
             msg = Message(subject="Reset your password from learning music",
                         sender=app.config.get("MAIL_USERNAME"), #sender email
                         recipients=[email],
-                        body= f"Hi! {name} to reset your email please enter the link : http://localhost:3000/new-password/?token={token}")
+                        body= f"Hi! {name} to reset your email please enter the link : https://learning-music-online.netlify.com/new-password/?token={token}")
             mail.send(msg)
         except Exception as err:
             print(f'{err}')
@@ -138,7 +138,7 @@ def get_new_password():
     user = Teacher(email = email).check_user()
     if not user:
         print("INVALID_TOKEN")
-        return redirect("https://localhost:3000/forgot-password")
+        return redirect("https://learning-music-online.netlify.com/forgot-password")
         user.set_password(new_password)
     return jsonify({'state': "success"})
     
