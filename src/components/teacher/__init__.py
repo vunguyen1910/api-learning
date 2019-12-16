@@ -142,7 +142,7 @@ def get_new_password():
     else:
         user.set_password(new_password)
         db.session.commit()
-    return jsonify({'state': "success"})
+        return jsonify({'state': "success"})
     
 
 
