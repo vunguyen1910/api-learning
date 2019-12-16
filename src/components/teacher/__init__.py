@@ -139,7 +139,9 @@ def get_new_password():
     if not user:
         print("INVALID_TOKEN")
         return redirect("https://learning-music-online.netlify.com/forgot-password")
+    else:
         user.set_password(new_password)
+        db.session.commit()
     return jsonify({'state': "success"})
     
 
