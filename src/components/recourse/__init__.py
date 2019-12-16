@@ -22,7 +22,7 @@ def get_singel_course(id):
             "title" : recourse_singel.title,
             "desc" : recourse_singel.desc,
             "course_id" : recourse_singel.course_id,
-            "teacher_id" : recourse_singel.id            
+            "teacher_id" : recourse_singel.teacher_id            
         }
     })
 
