@@ -15,16 +15,7 @@ def get_recourse(id):
 @recourse_blueprint.route('/singel-recourse/<id>')
 def get_singel_course(id):
     recourse_singel = Recourse.query.filter_by(course_id=id).first()
-    return jsonify({
-        "data":{
-            "id" : recourse_singel.id,
-            "url" : recourse_singel.url,
-            "title" : recourse_singel.title,
-            "desc" : recourse_singel.desc,
-            "course_id" : recourse_singel.course_id,
-            "teacher_id" : recourse_singel.teacher_id            
-        }
-    })
+    return jsonify(data = recourse_singel.render())
 
 @recourse_blueprint.route('/create', methods=['POST'])
 @login_required
