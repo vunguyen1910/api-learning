@@ -40,7 +40,6 @@ def login():
 
 
 @teacher_blueprint.route("/logout")
-@login_required
 def logout():
     token = Token.query.filter_by(user_id=current_user.id).first()
     if token:
