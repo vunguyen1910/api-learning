@@ -69,7 +69,9 @@ def register():
             new_teacher.set_password(data['password'])
             new_token = Token(
                 user_id=new_teacher.id, uuid=str(uuid.uuid4().hex))
-            db.session.add(new_teacher, new_token)
+            db.session.add(new_teacher)
+            db.session.commit()
+            db.session.add(new_token)
             db.session.commit()
             return jsonify({"user":{
                             'id': new_teacher.id,
