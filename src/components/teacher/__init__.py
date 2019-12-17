@@ -57,7 +57,7 @@ def register():
     if request.method == 'POST':
         data = request.get_json()
         email_user = data['email']
-        check_email = Teacher.query.filter_by(email=email_user).first()
+        check_email = Teacher.query.filter_by(email = email_user).first()
         check_phone = Teacher.query.filter_by(phone=data['phone']).first()
         check_name = Teacher.query.filter_by(name=data['name']).first()
         if not check_email and not check_phone and not check_name:
@@ -74,12 +74,12 @@ def register():
             db.session.commit()
             return jsonify({"user":{
                             'email': email_user,
-                            'name': check_email.name,
-                            "desc": check_email.desc,
-                            "avata_url": check_email.avata_url,
-                            "phone": check_email.phone,
+                            'name': new_teacher.name,
+                            "desc": new_teacher.desc,
+                            "avata_url": new_teacher.avata_url,
+                            "phone": new_teacher.phone,
                             },
-                            "token": token.uuid,
+                            "token": new_token.uuid,
                             "success": True
                             })
         if check_phone:
