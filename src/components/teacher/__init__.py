@@ -73,7 +73,6 @@ def register():
             db.session.commit()
             db.session.add(new_token)
             db.session.commit()
-            login_user(new_teacher)
             return jsonify({"user":{
                             'id': new_teacher.id,
                             'email': email_user,
