@@ -15,6 +15,7 @@ db = SQLAlchemy(app)
 db.init_app(app)
 from src.components.cli import create_db
 from src.models import Teacher, Course, Recourse, Token, OAuth, Document
+from src.models.teacher import Student, TokenStudent
 app.cli.add_command(create_db)
 
 migrate = Migrate(app, db)
@@ -25,7 +26,7 @@ login_manager = LoginManager(app)
 
 @login_manager.user_loader
 def load_user(id):
-    return Teacher.query.get(id)
+    return Teacher.query.get(id) or Student.query.get(id)
     
 mail_setting = {
     "MAIL_SERVER": 'smtp.gmail.com',
@@ -47,6 +48,9 @@ def load_user_from_request(request):
         token = Token.query.filter_by(uuid=api_key).first()
         if token:
             return token.user
+        if not token:
+            tokenStudent = TokenStudent.query.filter_by(uuid=api_key).first()
+            return tokenStudent.user
     return None
 
 from src.components.teacher import teacher_blueprint

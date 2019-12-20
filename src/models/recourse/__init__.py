@@ -10,7 +10,7 @@ class Recourse(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
     teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id'))
     document_id = db.relationship('Document', backref='recourse', lazy = True)
-    
+    comments = db.relationship('Comment', backref='recourse', lazy = True)
     def render(self):
         return {
             "id": self.id,
@@ -19,8 +19,8 @@ class Recourse(db.Model):
             "desc": self.desc,
             'course_id': self.course_id,
             'teacher_id': self.teacher_id,
+            "comment": [comment.get_comment() for comment in self.comments]
         }
-
 class Document(db.Model):
     __tablename__="documents"
     id = db.Column(db.Integer, primary_key = True)
