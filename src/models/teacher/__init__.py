@@ -15,6 +15,8 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(120))
     score = db.Column(db.Integer)
     role = db.Column(db.String(10))
+    comments = db.relationship("Comment", backref="user", lazy = True)
+    recomments = db.relationship("Recomment", backref="user", lazy = True)
 
     def set_password(self,password):
         self.password = generate_password_hash(password)
@@ -44,3 +46,30 @@ class OAuth(OAuthConsumerMixin, db.Model):
     provider_user_id = db.Column(db.String(256), unique=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable = False)
     user = db.relationship(User)
+
+class Comment(db.Model):
+    __tablename__ = "comments"
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    recourse_id = db.Column(db.Integer, db.ForeignKey('recourses.id'), nullable=False)
+    recomments = db.relationship("Recomment", backref="comment", lazy = True)
+    def get_comment(self):
+        return {
+            "id": self.id,
+            "body": self.body,
+            "author": self.user.get_user(),
+            "recomment": [recomment.get_recomment() for recommnet in self.recomments]
+        }
+class Recomment(db.Model):
+    __tablename__ = "recomments"
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    comment_id = db.Column(db.Integer, db.ForeignKey('comments.id'), nullable=False)
+    def get_recomment(self):
+        return{
+            "id": self.id,
+            "body": self.body,
+            "author": self.user.get_user()
+        }

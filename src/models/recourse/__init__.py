@@ -9,7 +9,8 @@ class Recourse(db.Model):
     desc = db.Column(db.Text)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    document_id = db.relationship('Document', backref='recourse', lazy = True)
+    documents = db.relationship('Document', backref='recourse', lazy = True)
+    comments = db.relationship("Comment", backref="recourse", lazy=True)
     def render(self):
         return {
             "id": self.id,
@@ -17,7 +18,9 @@ class Recourse(db.Model):
             "title": self.title,
             "desc": self.desc,
             'course_id': self.course_id,
-            'user_id': self.user_id,
+            'author': User.query.get(self.user_id).get_user(),
+            "document": [document.render() for document in self.documents],
+            'comments': [comment.get_conmmet() for comment in self.comments]
         }
 class Document(db.Model):
     __tablename__="documents"
@@ -33,5 +36,5 @@ class Document(db.Model):
             "title": self.title,
             "body": self.text,
             'recoures_id': self.recoures_id,
-            'user_id': self.user_id,
+            'user_id': self.user_id
         }
