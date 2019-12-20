@@ -26,13 +26,13 @@ def create_recourse():
         recourseURL = data['url']
         recourseTitle = data['title']
         recourseDesc = data['desc']
-        recourseTeacher = data['teacher_id']
+        recourseUser = data['user_id']
         recourseIDCourse = data['course_id']
         check_url = Recourse.query.filter_by(url=recourseURL).first()
 
         if not check_url:
             new_reCourse = Recourse(url=recourseURL, title=recourseTitle, desc=recourseDesc,
-                                    course_id=recourseIDCourse, teacher_id=recourseTeacher)
+                                    course_id=recourseIDCourse, user_id=recourseUser)
             db.session.add(new_reCourse)
             db.session.commit()
             return jsonify({"success": True})
@@ -79,7 +79,7 @@ def create_document():
         bodyDoc = data['body']
         recourse_id = data['recourse_id']
         new_doc = Document(text=bodyDoc, title=titleDoc,
-                           recoures_id=recourse_id, teacher_id=current_user.id)
+                           recoures_id=recourse_id, user_id=current_user.id)
         db.session.add(new_doc)
         db.session.commit()
         return jsonify({"success": True})

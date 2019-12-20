@@ -8,7 +8,7 @@ class Course(db.Model):
     desc = db.Column(db.Text)
     subject = db.Column(db.String, nullable=False)
     recourse_id = db.relationship('Recourse', backref='course', lazy = True)
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def render(self):
         return {
@@ -16,5 +16,5 @@ class Course(db.Model):
             "name": self.name,
             "img": self.img,
             "desc": self.desc,
-            'teacher_id': self.teacher_id
+            'user_id': self.user_id
         }

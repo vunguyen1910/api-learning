@@ -18,7 +18,7 @@ def create_Post():
                                     img= data['img'],
                                     desc= data['desc'],
                                     subject= data['subject'],
-                                    teacher_id= current_user.id
+                                    user_id= current_user.id
                 )
                 db.session.add(new_course)
                 db.session.commit()

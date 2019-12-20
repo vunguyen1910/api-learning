@@ -1,5 +1,5 @@
 from src import db
-from src.models import Teacher
+from src.models import User
 
 class Recourse(db.Model):
     __tablename__ = 'recourses'
@@ -8,9 +8,8 @@ class Recourse(db.Model):
     title = db.Column(db.String(255), nullable = False)
     desc = db.Column(db.Text)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     document_id = db.relationship('Document', backref='recourse', lazy = True)
-    comments = db.relationship('Comment', backref='recourse', lazy = True)
     def render(self):
         return {
             "id": self.id,
@@ -18,16 +17,15 @@ class Recourse(db.Model):
             "title": self.title,
             "desc": self.desc,
             'course_id': self.course_id,
-            'teacher_id': self.teacher_id,
-            "comment": [comment.get_comment() for comment in self.comments]
+            'user_id': self.user_id,
         }
 class Document(db.Model):
     __tablename__="documents"
     id = db.Column(db.Integer, primary_key = True)
     text = db.Column(db.Text, nullable = False)
     title = db.Column(db.String(255), nullable = False)
-    teacher_id = db.Column(db.Integer, db.ForeignKey(Teacher.id), nullable=False)
-    user = db.relationship(Teacher)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
+    user = db.relationship(User)
     recoures_id = db.Column(db.Integer, db.ForeignKey('recourses.id'))
     def render(self):
         return {
@@ -35,5 +33,5 @@ class Document(db.Model):
             "title": self.title,
             "body": self.text,
             'recoures_id': self.recoures_id,
-            'teacher_id': self.teacher_id,
+            'user_id': self.user_id,
         }
