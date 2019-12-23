@@ -8,11 +8,11 @@ from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer
 user_blueprint = Blueprint('users', __name__)
 from flask_mail import Message
 
-@user_blueprint.route('/login', methods=['GET'])
+@user_blueprint.route('/login', methods=['POST'])
 def login():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.get_json()
-        email = data['email']  
+        email = data['email']
         check_user = User.query.filter_by(email=email).first()
         if check_user:
             if check_user.check_password(data['pass']):

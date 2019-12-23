@@ -9,7 +9,7 @@ course_blueprint = Blueprint('courses', __name__)
 @login_required
 def create_Post():
     if request.method == 'POST':
-        try:
+        if current_user.role == "teacher":
             data = request.get_json()
             check_name = Course.query.filter_by(name = data['name']).first()
             if not check_name:
@@ -24,9 +24,7 @@ def create_Post():
                 db.session.commit()
                 return jsonify({'success': True})
             else: return jsonify({'success': False})
-        except Exception as Error:
-            print(Error)
-    return jsonify({"success": False})
+        return jsonify({"success": False})
 
 @course_blueprint.route('/<subject>', methods = ['GET'])
 def subject(subject):
@@ -34,26 +32,30 @@ def subject(subject):
     return jsonify(data=[row.render() for row in result])
 
 @course_blueprint.route('/<id>/delete', methods = ['DELETE'])
+@login_required
 def deletePost(id):
     if request.method == "DELETE":
         course = Course.query.filter_by(id = id).first()
-        db.session.delete(course)
-        db.session.commit()
-        return jsonify({'message': f'course {id} has deleted'})
+        if current_user.id == course.user_id:
+            db.session.delete(course)
+            db.session.commit()
+            return jsonify({'message': f'course {id} has deleted'})
+        return jsonify({'success': False})
 
 @course_blueprint.route('/<id>/edit', methods = ['PUT'])
 @login_required
 def editCourse(id):
     if request.method == 'PUT':
         course = Course.query.filter_by(id = id).first()
-        data = request.get_json()
-        newName = data['name']
-        newImg = data['img']
-        newDesc = data['desc']
-        course.name = newName
-        print (course.name)
-        course.img = newImg
-        course.desc = newDesc
-        db.session.commit()
-        return jsonify({'success': True})
-    return jsonify({'success': False})
+        if current_user.id == course.id:
+            data = request.get_json()
+            newName = data['name']
+            newImg = data['img']
+            newDesc = data['desc']
+            course.name = newName
+            print (course.name)
+            course.img = newImg
+            course.desc = newDesc
+            db.session.commit()
+            return jsonify({'success': True})
+        return jsonify({'success': False})

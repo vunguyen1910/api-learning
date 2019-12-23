@@ -14,7 +14,7 @@ class User(UserMixin, db.Model):
     recourse_id = db.relationship('Recourse', backref='user', lazy = True)
     password = db.Column(db.String(120))
     score = db.Column(db.Integer)
-    role = db.Column(db.String(10))
+    role = db.Column(db.String(10), default="student")
     comments = db.relationship("Comment", backref="user", lazy = True)
     recomments = db.relationship("Recomment", backref="user", lazy = True)
 
