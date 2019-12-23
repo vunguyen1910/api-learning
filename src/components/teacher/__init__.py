@@ -74,16 +74,7 @@ def register():
             new_user.set_password(data['password'])
             db.session.add(new_user)
             db.session.commit()
-            return jsonify({"user":{
-                            'id': new_user.id,
-                            'email': email_user,
-                            'name': new_user.name,
-                            "desc": new_user.desc,
-                            "avata_url": new_user.avata_url,
-                            "phone": new_user.phone,
-                            },
-                            "success": True
-                            })
+            return jsonify({"success": True})
         if check_phone:
             return jsonify({'state': 'phone already exits', "success": False})
         if check_name:
