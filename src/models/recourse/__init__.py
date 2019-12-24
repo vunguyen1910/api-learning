@@ -20,7 +20,7 @@ class Recourse(db.Model):
             'course_id': self.course_id,
             'author': User.query.get(self.user_id).get_user(),
             "document": [document.render() for document in self.documents],
-            'comments': [comment.get_conmmet() for comment in self.comments]
+            'comments': [comment.get_comment() for comment in self.comments]
         }
 class Document(db.Model):
     __tablename__="documents"

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, flash, redirect, url_for, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
 from src import db, app
-from src.models import Course
+from src.models import Course, User
 
 course_blueprint = Blueprint('courses', __name__)
 
@@ -21,6 +21,8 @@ def create_Post():
                                     user_id= current_user.id
                 )
                 db.session.add(new_course)
+                user = User.query.filter_by(id = current_user.id).first()
+                user.score = user.score + 10
                 db.session.commit()
                 return jsonify({'success': True})
             else: return jsonify({'success': False})
@@ -38,6 +40,8 @@ def deletePost(id):
         course = Course.query.filter_by(id = id).first()
         if current_user.id == course.user_id:
             db.session.delete(course)
+            user = User.query.filter_by(id = current_user.id).first()
+            user.score = user.score - 10
             db.session.commit()
             return jsonify({'message': f'course {id} has deleted'})
         return jsonify({'success': False})
@@ -47,7 +51,7 @@ def deletePost(id):
 def editCourse(id):
     if request.method == 'PUT':
         course = Course.query.filter_by(id = id).first()
-        if current_user.id == course.id:
+        if current_user.id == course.user_id:
             data = request.get_json()
             newName = data['name']
             newImg = data['img']

@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from src import db
-from src.models import Course, Recourse, Document
+from src.models import Course, Recourse, Document, User
+from src.models.teacher import Comment, Recomment
 from flask_login import current_user, login_required, login_user, logout_user
 
 recourse_blueprint = Blueprint('recourses', __name__)
@@ -26,28 +27,32 @@ def create_recourse():
         recourseURL = data['url']
         recourseTitle = data['title']
         recourseDesc = data['desc']
-        recourseUser = data['user_id']
         recourseIDCourse = data['course_id']
         check_url = Recourse.query.filter_by(url=recourseURL).first()
-
-        if not check_url:
-            new_reCourse = Recourse(url=recourseURL, title=recourseTitle, desc=recourseDesc,
-                                    course_id=recourseIDCourse, user_id=recourseUser)
-            db.session.add(new_reCourse)
-            db.session.commit()
-            return jsonify({"success": True})
+        if current_user.role == "teacher":
+            if not check_url:
+                new_reCourse = Recourse(url=recourseURL, title=recourseTitle, desc=recourseDesc,
+                                        course_id=recourseIDCourse, user_id=current_user.id)
+                user = User.query.filter_by(id = current_user.id).first()
+                user.score = user.score + 3
+                db.session.add(new_reCourse)
+                db.session.commit()
+                return jsonify({"success": True})
+            return jsonify({"success": False})
         return jsonify({"success": False})
-    return jsonify({"success": False})
 
 
 @recourse_blueprint.route('/<id>/delete', methods=['DELETE'])
 @login_required
-def delete_recourse():
+def delete_recourse(id):
     if request.method == 'DELETE':
         recourse = Recourse.query.filter_by(id=id).first()
-        db.session.delete(recourse)
-        db.session.commit()
-        return jsonify({'message': f'course {id} has deleted'})
+        if recourse.user_id == current_user.id:
+            user = User.query.filter_by(id = current_user.id).first()
+            user.score = user.score - 3
+            db.session.delete(recourse)
+            db.session.commit()
+            return jsonify({'message': f'course {id} has deleted'})
 
 
 @recourse_blueprint.route('/<id>/edit', methods=['PUT'])
@@ -80,21 +85,20 @@ def create_document():
         recourse_id = data['recourse_id']
         new_doc = Document(text=bodyDoc, title=titleDoc,
                            recoures_id=recourse_id, user_id=current_user.id)
+        user = User.query.filter_by(id = current_user.id).first()
+        user.score = user.score + 3
         db.session.add(new_doc)
         db.session.commit()
         return jsonify({"success": True})
     return jsonify({"success": False})
-
-@recourse_blueprint.route("/<id>/render_document")
-def render_document(id):
-    all_doc = Document.query.filter_by(recoures_id = id).all()
-    return jsonify(data=[row.render() for row in all_doc])
 
 @recourse_blueprint.route("/<id>/delete-doc", methods=['DELETE'])
 @login_required
 def delete_document(id):
     if request.method == 'DELETE':
         document_need_to_delete = Document.query.filter_by(id = id).first()
+        user = User.query.filter_by(id = current_user.id).first()
+        user.score = user.score -3
         db.session.delete(document_need_to_delete)
         db.session.commit()
         return jsonify({'success': True})
@@ -116,3 +120,45 @@ def edit_document(id):
         db.session.commit()
         return jsonify({'success': True})
     return jsonify({'success': False})
+
+@recourse_blueprint.route('/<id>/create-comment', methods=['POST'])
+@login_required
+def create_comment(id):
+    if request.method == "POST":
+        data = request.get_json()
+        comment = data['comment']
+        check_comment = Comment.query.filter_by(body = comment).first()
+        if not check_comment:
+            new_comment = Comment(body = comment, user_id = current_user.id, recourse_id = id)
+            db.session.add(new_comment)
+            db.session.commit()
+            return jsonify({'success': True})
+        return jsonify({'success': False})
+    return jsonify({"success": False})
+@recourse_blueprint.route('/<id>/delete-comment', methods=['DELETE'])
+@login_required
+def delete_comment(id):
+    if request.method == "DELETE":
+        comment = Comment.query.filter_by(id =id).first()
+        if current_user.id == comment.user_id:
+            db.session.delete(comment)
+            db.session.commit()
+            return jsonify({'success': True})
+        return jsonify({'success': False})
+    return jsonify({"success": False})
+
+@recourse_blueprint.route('/<id>/edit-comment', methods=["PUT"])
+@login_required
+def edit_comment(id):
+    if request.method == 'PUT':
+        data = request.get_json()
+        comment = data['comment']
+        check_comment = Comment.query.filter_by(id = id).first()
+        if check_comment:
+            if current_user.id == check_comment.user_id:
+                check_comment.body = comment
+                db.session.commit()
+                return jsonify({"success": True})
+            return jsonify({"success": False})
+        return jsonify({"success": False})
+    return jsonify({"success": False})
