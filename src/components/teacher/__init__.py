@@ -123,6 +123,7 @@ def get_new_password():
     data = request.get_json()
     token = data['token']
     new_password = data['password']
+    print(new_password, "newPass")
     s = URLSafeTimedSerializer(app.secret_key)
     email = s.loads(token, salt="RESET_PASSWORD")
     user = User(email = email).check_user()
