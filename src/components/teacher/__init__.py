@@ -1,7 +1,7 @@
 from flask import Blueprint, request, flash, redirect, url_for, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
 from src import db, app, mail
-from src.models import User, Token
+from src.models import User, Token, Notification
 import uuid
 import requests
 from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer
@@ -135,4 +135,19 @@ def get_new_password():
         db.session.commit()
         return jsonify({"success": True})
 
+@user_blueprint.route('/notification', methods=['GET'])
+@login_required
+def get_notification():
+    notices = Notification.query.filter_by(recipient_id = current_user.id).limit(10).all()
+    unseen = Notification.query.filter_by(readed = False).all()
+    countUnseen = len(unseen)
+    print(countUnseen)
+    return jsonify({"data": [notice.get_notification() for notice in notices[::-1]], "countUnseen": countUnseen})
 
+@user_blueprint.route('/notification/<id>', methods=['PUT'])
+@login_required
+def edit_notification(id):
+    notice = Notification.query.filter_by(id = id).first()
+    notice.readed = True
+    db.session.commit()
+    return jsonify({"success": True})

@@ -1,5 +1,5 @@
 from src import db
-from src.models import User
+from src.models import User, Notification
 
 class Recourse(db.Model):
     __tablename__ = 'recourses'
@@ -11,6 +11,7 @@ class Recourse(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     documents = db.relationship('Document', backref='recourse', lazy = True)
     comments = db.relationship("Comment", backref="recourse", lazy=True)
+    notification = db.relationship("Notification", backref="recourse", lazy=True)
     def render(self):
         return {
             "id": self.id,

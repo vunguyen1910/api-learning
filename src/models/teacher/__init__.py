@@ -17,6 +17,8 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String(10), default="student")
     comments = db.relationship("Comment", backref="user", lazy = True)
     recomments = db.relationship("Recomment", backref="user", lazy = True)
+    messages_send = db.relationship("Notification", foreign_keys='Notification.sender_id', backref="usersend", lazy = 'dynamic')
+    messages_received = db.relationship("Notification", foreign_keys='Notification.recipient_id', backref="userreciver", lazy = 'dynamic')
 
     def set_password(self,password):
         self.password = generate_password_hash(password)
@@ -72,4 +74,22 @@ class Recomment(db.Model):
             "id": self.id,
             "body": self.body,
             "author": self.user.get_user()
+        }
+
+class Notification(db.Model):
+    __tablename__="notifications"
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String, nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey("recourses.id"))
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    readed = db.Column(db.Boolean, default= False)
+    def get_notification(self):
+        return {
+            "id": self.id,
+            "body": self.body,
+            "sender": self.usersend.get_user(),
+            "recipient": self.userreciver.get_user(),
+            "post_id": self.post_id,
+            "readed": self.readed
         }

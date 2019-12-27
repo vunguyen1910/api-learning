@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from src import db
-from src.models import Course, Recourse, Document, User
+from src.models import Course, Recourse, Document, User, Notification
 from src.models.teacher import Comment, Recomment
 from flask_login import current_user, login_required, login_user, logout_user
 
@@ -98,7 +98,7 @@ def delete_document(id):
     if request.method == 'DELETE':
         document_need_to_delete = Document.query.filter_by(id = id).first()
         user = User.query.filter_by(id = current_user.id).first()
-        user.score = user.score -3
+        user.score = user.score - 3
         db.session.delete(document_need_to_delete)
         db.session.commit()
         return jsonify({'success': True})
@@ -130,7 +130,10 @@ def create_comment(id):
         check_comment = Comment.query.filter_by(body = comment).first()
         if not check_comment:
             new_comment = Comment(body = comment, user_id = current_user.id, recourse_id = id)
+            recourse = Recourse.query.get(id)
+            new_notice = Notification(sender_id = current_user.id, post_id = id, recipient_id = recourse.user_id, body = f'{current_user.name} has comment on your post')
             db.session.add(new_comment)
+            db.session.add(new_notice)
             db.session.commit()
             return jsonify({'success': True})
         return jsonify({'success': False})
