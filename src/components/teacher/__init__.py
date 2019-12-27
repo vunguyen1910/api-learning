@@ -90,7 +90,6 @@ def get_user():
         "user": current_user.get_user()
     })
 
-
 def send_email(token, email, name):
     with app.app_context():
         try:
