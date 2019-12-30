@@ -1,4 +1,4 @@
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from src import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
@@ -36,6 +36,15 @@ class User(UserMixin, db.Model):
             "phone": self.phone,
             "score": self.score,
             "role" : self.role
+        }
+    def get_user_secrect(self):
+        return{
+            "id": self.id,
+            "name": self.name,
+            "desc": self.desc,
+            "avata_url": self.avata_url,
+            "score": self.score,
+            "role": self.role
         }
 
 class Token(db.Model):

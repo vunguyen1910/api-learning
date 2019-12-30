@@ -63,3 +63,8 @@ def editCourse(id):
             db.session.commit()
             return jsonify({'success': True})
         return jsonify({'success': False})
+
+@course_blueprint.route('/single-course/<id>')
+def get_single_course(id):
+    course = Course.query.filter_by(id = id).first()
+    return jsonify({"course":course.render()})

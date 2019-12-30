@@ -16,5 +16,5 @@ class Course(db.Model):
             "name": self.name,
             "img": self.img,
             "desc": self.desc,
-            'user_id': self.user_id
+            'user_id': self.user.get_user_secrect()
         }

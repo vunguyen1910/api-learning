@@ -90,6 +90,13 @@ def get_user():
         "user": current_user.get_user()
     })
 
+@user_blueprint.route('/get-top-10')
+def get_top_10():
+    top10 = User.query.filter_by(role="teacher").order_by(User.score.desc()).limit(10).all()
+    return jsonify({
+        "user": [user.get_user_secrect() for user in top10]
+    })
+
 def send_email(token, email, name):
     with app.app_context():
         try:
