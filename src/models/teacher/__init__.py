@@ -69,7 +69,7 @@ class Comment(db.Model):
         return {
             "id": self.id,
             "body": self.body,
-            "author": self.user.get_user(),
+            "author": self.user.get_user_secrect(),
             "recomment": [recomment.get_recomment() for recommnet in self.recomments]
         }
 class Recomment(db.Model):
@@ -82,7 +82,7 @@ class Recomment(db.Model):
         return{
             "id": self.id,
             "body": self.body,
-            "author": self.user.get_user()
+            "author": self.user.get_user_secrect()
         }
 
 class Notification(db.Model):

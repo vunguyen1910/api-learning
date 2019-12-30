@@ -68,3 +68,8 @@ def editCourse(id):
 def get_single_course(id):
     course = Course.query.filter_by(id = id).first()
     return jsonify({"course":course.render()})
+
+@course_blueprint.route('/teacher/<id>', methods = ['GET'])
+def teacher(id):
+    result = Course.query.filter_by(user_id = id).all()
+    return jsonify(data=[row.render() for row in result])
