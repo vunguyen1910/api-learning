@@ -64,18 +64,19 @@ class Comment(db.Model):
     body = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     recourse_id = db.Column(db.Integer, db.ForeignKey('recourses.id'), nullable=False)
-    recomments = db.relationship("Recomment", backref="comment", lazy = True)
+    recomments = db.relationship("Recomment", backref="comment", lazy = "dynamic")
     def get_comment(self):
         return {
             "id": self.id,
             "body": self.body,
             "author": self.user.get_user_secrect(),
-            "recomment": [recomment.get_recomment() for recommnet in self.recomments]
+            "recomment": [recomment.get_recomment() for recomment in self.recomments.order_by(Recomment.id.desc()).all()]
         }
 class Recomment(db.Model):
     __tablename__ = "recomments"
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String, nullable=False)
+    post_id = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     comment_id = db.Column(db.Integer, db.ForeignKey('comments.id'), nullable=False)
     def get_recomment(self):

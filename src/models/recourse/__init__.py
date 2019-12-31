@@ -1,5 +1,6 @@
 from src import db
 from src.models import User, Notification
+from src.models.teacher import Comment
 
 class Recourse(db.Model):
     __tablename__ = 'recourses'
@@ -10,7 +11,7 @@ class Recourse(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     documents = db.relationship('Document', backref='recourse', lazy = True)
-    comments = db.relationship("Comment", backref="recourse", lazy=True)
+    comments = db.relationship("Comment", backref="recourse", lazy="dynamic")
     notification = db.relationship("Notification", backref="recourse", lazy=True)
     def render(self):
         return {
@@ -21,7 +22,7 @@ class Recourse(db.Model):
             'course_id': self.course_id,
             'author': User.query.get(self.user_id).get_user(),
             "document": [document.render() for document in self.documents],
-            'comments': [comment.get_comment() for comment in self.comments]
+            'comments': [comment.get_comment() for comment in self.comments.order_by(Comment.id.desc()).all()]
         }
 class Document(db.Model):
     __tablename__="documents"

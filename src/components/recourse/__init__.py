@@ -165,3 +165,48 @@ def edit_comment(id):
             return jsonify({"success": False})
         return jsonify({"success": False})
     return jsonify({"success": False})
+
+@recourse_blueprint.route('/<id>/create-recomment', methods=['POST'])
+@login_required
+def create_recomment(id):
+    if request.method == "POST":
+        data = request.get_json()
+        recomment = data['recomment']
+        if current_user.role == "teacher":
+            comment = Comment.query.filter_by(id = id).first()
+            print(comment.id, "cmt")
+            new_recomment = Recomment(body = recomment, post_id = comment.recourse_id, user_id = current_user.id, comment_id = id)
+            new_notice = Notification(sender_id = current_user.id, post_id = comment.recourse_id, recipient_id = comment.user_id, body = f'{current_user.name} has comment on your comment')
+            db.session.add(new_notice)
+            db.session.add(new_recomment)
+            db.session.commit()
+            return jsonify({"success": True})
+        return jsonify({"success": False})
+    return jsonify({"success": False})
+
+@recourse_blueprint.route('<id>/edit-recomment', methods=['PUT'])
+@login_required
+def edit_recomment(id):
+    if request.method == 'PUT':
+        data = request.get_json()
+        recomment = data['recomment']
+        check_recomment = Recomment.query.filter_by(id = id).first()
+        if check_recomment:
+            if current_user.id == check_recomment.user_id:
+                check_recomment.body = recomment
+                db.session.commit()
+            return jsonify({"success": False})
+        return jsonify({"success": False})
+    return jsonify({"success": False})
+
+@recourse_blueprint.route('/<id>/delete-recomment', methods=['DELETE'])
+@login_required
+def delete_recomment(id):
+    if request.method == "DELETE":
+        recomment = Recomment.query.filter_by(id =id).first()
+        if current_user.id == recomment.user_id:
+            db.session.delete(recomment)
+            db.session.commit()
+            return jsonify({'success': True})
+        return jsonify({'success': False})
+    return jsonify({"success": False})
