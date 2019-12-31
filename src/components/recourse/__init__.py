@@ -6,8 +6,6 @@ from flask_login import current_user, login_required, login_user, logout_user
 
 recourse_blueprint = Blueprint('recourses', __name__)
 
-
-
 @recourse_blueprint.route('/<id>')
 def get_recourse(id):
     recourse_from_course = Recourse.query.filter_by(course_id=id).all()
@@ -174,7 +172,8 @@ def create_recomment(id):
         recomment = data['recomment']
         if current_user.role == "teacher":
             comment = Comment.query.filter_by(id = id).first()
-            print(comment.id, "cmt")
+            user = User.query.filter_by(id = current_user.id).first()
+            user.score = user.score + 2
             new_recomment = Recomment(body = recomment, post_id = comment.recourse_id, user_id = current_user.id, comment_id = id)
             new_notice = Notification(sender_id = current_user.id, post_id = comment.recourse_id, recipient_id = comment.user_id, body = f'{current_user.name} has comment on your comment')
             db.session.add(new_notice)
@@ -205,6 +204,8 @@ def delete_recomment(id):
     if request.method == "DELETE":
         recomment = Recomment.query.filter_by(id =id).first()
         if current_user.id == recomment.user_id:
+            user = User.query.filter_by(id = current_user.id).first()
+            user.score = user.score - 2
             db.session.delete(recomment)
             db.session.commit()
             return jsonify({'success': True})
