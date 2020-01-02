@@ -145,7 +145,7 @@ def get_new_password():
 @user_blueprint.route('/notification', methods=['GET'])
 @login_required
 def get_notification():
-    notices = Notification.query.filter_by(recipient_id = current_user.id).limit(10).all()
+    notices = Notification.query.filter_by(recipient_id = current_user.id).all()
     unseen = Notification.query.filter_by(readed = False).all()
     countUnseen = len(unseen)
     print(countUnseen)

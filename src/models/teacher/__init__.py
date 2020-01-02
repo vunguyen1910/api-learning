@@ -97,6 +97,7 @@ class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String, nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey("recourses.id"))
+    comment_id = db.Column(db.Integer)
     sender_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     readed = db.Column(db.Boolean, default= False)
@@ -107,5 +108,6 @@ class Notification(db.Model):
             "sender": self.usersend.get_user(),
             "recipient": self.userreciver.get_user(),
             "post_id": self.post_id,
-            "readed": self.readed
+            "readed": self.readed,
+            "comment_id":self.comment_id
         }

@@ -125,15 +125,14 @@ def create_comment(id):
     if request.method == "POST":
         data = request.get_json()
         comment = data['comment']
-        check_comment = Comment.query.filter_by(body = comment).first()
-        if not check_comment:
-            new_comment = Comment(body = comment, user_id = current_user.id, recourse_id = id)
-            recourse = Recourse.query.get(id)
-            new_notice = Notification(sender_id = current_user.id, post_id = id, recipient_id = recourse.user_id, body = f'{current_user.name} has comment on your post')
-            db.session.add(new_comment)
-            db.session.add(new_notice)
-            db.session.commit()
-            return jsonify({'success': True})
+        new_comment = Comment(body = comment, user_id = current_user.id, recourse_id = id)
+        db.session.add(new_comment)
+        db.session.commit()
+        print(new_comment.id, "id comment")
+        recourse = Recourse.query.get(id)
+        new_notice = Notification(sender_id = current_user.id, comment_id=new_comment.id, post_id = id, recipient_id = recourse.user_id, body = f'{current_user.name} has comment on your post') 
+        db.session.add(new_notice)
+        db.session.commit()
         return jsonify({'success': False})
     return jsonify({"success": False})
 @recourse_blueprint.route('/<id>/delete-comment', methods=['DELETE'])
