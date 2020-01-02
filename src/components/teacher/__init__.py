@@ -43,6 +43,23 @@ def logout():
         'success': True
     })
 
+@user_blueprint.route("/edit-user/<id>", methods=["PUT"])
+@login_required
+def edit_user(id):
+    if request.method == "PUT":
+        user_edit = User.query.filter_by(id = id).first()
+        if current_user.id == user_edit.id:
+            data = request.get_json()
+            email_user = data['email']
+            user_edit.email = email_user
+            user_edit.name = data['name']
+            user_edit.desc = data["desc"]
+            user_edit.avata_url = data['avata_url']
+            user_edit.phone = data['phone']
+            db.session.commit()         
+            return jsonify({"success": True})
+        return jsonify({"success": False})
+    return jsonify({"success": False})
 
 @user_blueprint.route('/register', methods=['POST'])
 def register():

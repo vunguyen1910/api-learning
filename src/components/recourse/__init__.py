@@ -14,7 +14,6 @@ def get_recourse(id):
 @recourse_blueprint.route('/singel-recourse/<id>')
 def get_singel_course(id):
     recourse_singel = Recourse.query.filter_by(id = id).first()
-    print(recourse_singel.id,"recourse singel here")
     return jsonify(data = recourse_singel.render())
 
 @recourse_blueprint.route('/create', methods=['POST'])
@@ -112,9 +111,6 @@ def edit_document(id):
 
         fix_doc.title = newTitle
         fix_doc.text = newBody
-
-        print(fix_doc.title,"new title?")
-        print(fix_doc.text, "new body?")
         db.session.commit()
         return jsonify({'success': True})
     return jsonify({'success': False})
@@ -128,7 +124,6 @@ def create_comment(id):
         new_comment = Comment(body = comment, user_id = current_user.id, recourse_id = id)
         db.session.add(new_comment)
         db.session.commit()
-        print(new_comment.id, "id comment")
         recourse = Recourse.query.get(id)
         new_notice = Notification(sender_id = current_user.id, comment_id=new_comment.id, post_id = id, recipient_id = recourse.user_id, body = f'{current_user.name} has comment on your post') 
         db.session.add(new_notice)
