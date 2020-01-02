@@ -13,6 +13,8 @@ class Recourse(db.Model):
     documents = db.relationship('Document', backref='recourse', lazy = True)
     comments = db.relationship("Comment", backref="recourse", lazy="dynamic")
     notification = db.relationship("Notification", backref="recourse", lazy=True)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), server_onupdate=db.func.now())
     def render(self):
         return {
             "id": self.id,
@@ -22,7 +24,8 @@ class Recourse(db.Model):
             'course_id': self.course_id,
             'author': User.query.get(self.user_id).get_user(),
             "document": [document.render() for document in self.documents],
-            'comments': [comment.get_comment() for comment in self.comments.order_by(Comment.id.desc()).all()]
+            'comments': [comment.get_comment() for comment in self.comments.order_by(Comment.id.desc()).all()],
+            "date": self.updated_at
         }
 class Document(db.Model):
     __tablename__="documents"
@@ -32,11 +35,14 @@ class Document(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     user = db.relationship(User)
     recoures_id = db.Column(db.Integer, db.ForeignKey('recourses.id'))
+    created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), server_onupdate=db.func.now())
     def render(self):
         return {
             "id": self.id,
             "title": self.title,
             "body": self.text,
             'recoures_id': self.recoures_id,
-            'user_id': self.user_id
+            'user_id': self.user_id,
+            "date": self.updated_at
         }

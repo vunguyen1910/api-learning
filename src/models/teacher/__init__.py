@@ -65,12 +65,15 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     recourse_id = db.Column(db.Integer, db.ForeignKey('recourses.id'), nullable=False)
     recomments = db.relationship("Recomment", backref="comment", lazy = "dynamic")
+    created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), server_onupdate=db.func.now())
     def get_comment(self):
         return {
             "id": self.id,
             "body": self.body,
             "author": self.user.get_user_secrect(),
-            "recomment": [recomment.get_recomment() for recomment in self.recomments.order_by(Recomment.id.desc()).all()]
+            "recomment": [recomment.get_recomment() for recomment in self.recomments.order_by(Recomment.id.desc()).all()],
+            "date": self.updated_at
         }
 class Recomment(db.Model):
     __tablename__ = "recomments"
@@ -79,11 +82,14 @@ class Recomment(db.Model):
     post_id = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     comment_id = db.Column(db.Integer, db.ForeignKey('comments.id'), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), server_onupdate=db.func.now())
     def get_recomment(self):
         return{
             "id": self.id,
             "body": self.body,
-            "author": self.user.get_user_secrect()
+            "author": self.user.get_user_secrect(),
+            "date":self.updated_at
         }
 
 class Notification(db.Model):
