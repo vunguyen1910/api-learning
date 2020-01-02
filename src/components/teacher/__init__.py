@@ -158,3 +158,15 @@ def edit_notification(id):
     notice.readed = True
     db.session.commit()
     return jsonify({"success": True})
+
+@user_blueprint.route('/notification/<id>/delete', methods=['DELETE'])
+@login_required
+def delete_notification(id):
+    if request.method == "DELETE":
+        notice_delete = Notification.query.filter_by(id = id).first()
+        if current_user.id ==  notice_delete.recipient_id:
+            db.session.delete(notice_delete)
+            db.session.commit()
+            return jsonify({"success": False})
+        return jsonify({"success": False})
+    return jsonify({"success": True})
